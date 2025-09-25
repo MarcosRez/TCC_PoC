@@ -46,10 +46,11 @@ docker compose --profile s6 up -d
 ### Executar testes no k6
 
 #### 100 VUs por 3 minutos contra o gateway
-docker compose run --rm -e VUS=100 -e DURATION=3m -e BASE_URL=http://host.docker.internal:8081 k6 run script.js
-#### Sobrescrevendo comando:
-docker compose run --rm k6 run --vus 200 --duration 2m script.js
-
+```bash
+docker compose run --rm -e VUS=100 -e DURATION=3m k6 run script.js
+```
 
 ### Executar a aplicação
+```bash
 SCENARIO=s1 docker compose --profile s1 up -d
+```
