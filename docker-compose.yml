@@ -1,0 +1,75 @@
+version: "3.9"
+
+name: tcc-apps
+
+networks:
+  app:
+    external: true
+    name: tcc-app
+
+services:
+  gateway:
+    build: ./gateway
+    container_name: tcc-gateway
+    env_file: []
+    environment:
+      SVC_A_URL: http://svc1:4001
+      SVC_B_URL: http://svc2:4002
+      PORT: "4000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - svc1
+      - svc2
+    networks: [app]
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  svc1:
+    build: ./svc1
+    container_name: tcc-svc1
+    ports:
+      - "4001:4001"
+    environment:
+      SERVICE_NAME: svc1
+      PORT: "4001"
+      SCENARIO: ${SCENARIO:-s1}
+      # Postgres
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_USER: tcc
+      PG_PASSWORD: tcc
+      PG_DATABASE: appdb
+      # Mongo
+      MONGO_URI: mongodb://tcc:tcc@mongo:27017
+      MONGO_DB: appdb
+      # Redis
+      REDIS_URL: redis://redis:6379
+      # simulação externa
+      EXTERNAL_LAT_MS: "80"
+      FAIL_RATIO: "0.05"
+    depends_on:
+      - svc2
+    networks: [app]
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  svc2:
+    build: ./svc2
+    container_name: tcc-svc2
+    ports:
+      - "4002:4002"
+    environment:
+      SERVICE_NAME: svc2
+      PORT: "4002"
+      SCENARIO: ${SCENARIO:-s1}
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_USER: tcc
+      PG_PASSWORD: tcc
+      PG_DATABASE: appdb
+      MONGO_URI: mongodb://tcc:tcc@mongo:27017
+      MONGO_DB: appdb
+      REDIS_URL: redis://redis:6379
+      EXTERNAL_LAT_MS: "120"
+      FAIL_RATIO: "0.03"
+    networks: [app]
+    profiles: ["s1","s2","s3","s4","s5","s6"]

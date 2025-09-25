@@ -1,0 +1,168 @@
+version: "3.9"
+
+name: tcc-infra
+
+networks:
+  app:
+    name: tcc-app       
+  monitoring:
+    name: tcc-monitoring
+
+volumes:
+  pg_data:
+  mongo_data:
+  grafana_data:
+  prometheus_data:
+
+services:
+  # ====== BANCO DE DADOS ======
+  postgres:
+    image: postgres:16
+    container_name: tcc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tcc
+      POSTGRES_PASSWORD: tcc
+      POSTGRES_DB: appdb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks: [app]
+    profiles: ["s1","s3","s5","s6"]
+
+  mongo:
+    image: mongo:7
+    container_name: tcc-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tcc
+      MONGO_INITDB_ROOT_PASSWORD: tcc
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks: [app]
+    profiles: ["s2","s4","s5","s6"]
+
+  redis:
+    image: redis:7
+    container_name: tcc-redis
+    restart: unless-stopped
+    command: ["redis-server","--save","","--appendonly","no"]
+    ports:
+      - "6379:6379"
+    networks: [app]
+    profiles: ["s3","s4","s6"]
+
+  # ====== EXPORTERS (Banco/Cache) ======
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: tcc-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: postgresql://tcc:tcc@postgres:5432/appdb?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on: [postgres]
+    networks: [monitoring, app]
+    profiles: ["s1","s3","s5","s6"]
+
+  mongodb_exporter:
+    image: percona/mongodb_exporter:0.43
+    container_name: tcc-mongodb-exporter
+    restart: unless-stopped
+    command:
+      - "--mongodb.uri=mongodb://tcc:tcc@mongo:27017/"
+    ports:
+      - "9216:9216"
+    depends_on: [mongo]
+    networks: [monitoring, app]
+    profiles: ["s2","s4","s5","s6"]
+
+  redis_exporter:
+    image: oliver006/redis_exporter:v1.62.0
+    container_name: tcc-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    ports:
+      - "9121:9121"
+    depends_on: [redis]
+    networks: [monitoring, app]
+    profiles: ["s3","s4","s6"]
+
+  # ====== MONITORAMENTO ======
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: tcc-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - node_exporter
+      - cadvisor
+    networks: [monitoring]
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: tcc-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on: [prometheus]
+    networks: [monitoring]
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  node_exporter:
+    image: prom/node-exporter:v1.8.1
+    container_name: tcc-node-exporter
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+    command:
+      - "--path.rootfs=/host"
+    volumes:
+      - "/:/host:ro,rslave"
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: tcc-cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks: [monitoring]
+    profiles: ["s1","s2","s3","s4","s5","s6"]
+
+  # ====== TESTES DE CARGA (k6) ======
+  k6:
+    image: grafana/k6:0.51.0
+    container_name: tcc-k6
+    working_dir: /scripts
+    volumes:
+      - ./k6:/scripts
+    # Exemplo de execução: sobrescreva 'command' na hora de rodar
+    # command: ["run","--vus","100","--duration","2m","script.js"]
+    networks: [app]
+    profiles: ["s1","s2","s3","s4","s5","s6"]

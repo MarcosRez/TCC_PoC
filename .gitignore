@@ -1,0 +1,11 @@
+node_modules
+package-lock.json
+gateway/node_modules
+svc1/node_modules
+svc2/node_modules
+gateway/package-lock.json
+svc1/package-lock.json
+svc2/package-lock.json
+dist
+svc1/dist
+svc2/dist
