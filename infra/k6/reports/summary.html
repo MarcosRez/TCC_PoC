@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-br"><meta charset="utf-8">
+<title>Relatório k6</title>
+<style>
+body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;margin:24px}
+h1{margin:0 0 8px} .muted{color:#666}
+.card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+table{border-collapse:collapse;width:100%} th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+code,pre{background:#f6f8fa;border-radius:6px;padding:8px;display:block;white-space:pre-wrap}
+.badge{display:inline-block;background:#eef;padding:4px 8px;border-radius:999px;margin-right:8px}
+</style>
+<h1>Relatório k6</h1>
+<div class="muted">Início: undefined • Duração: 10.20302187s</div>
+
+<div class="card">
+  <div class="badge">Requisições: 0</div>
+  <div class="badge">p95: 0.0 ms</div>
+  <div class="badge">p99: 0.0 ms</div>
+  <div class="badge">avg: 0.0 ms</div>
+  <div class="badge">checks: 0 ✓ / 0 ✗</div>
+</div>
+
+<div class="card">
+  <h3>Métricas (resumo)</h3>
+  <table>
+    <thead><tr><th>Nome</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>http_reqs</td><td>0</td></tr>
+      <tr><td>http_req_duration.avg</td><td>0</td></tr>
+      <tr><td>http_req_duration.p95</td><td>0</td></tr>
+      <tr><td>http_req_duration.p99</td><td>0</td></tr>
+      <tr><td>checks.passes</td><td>0</td></tr>
+      <tr><td>checks.fails</td><td>0</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>JSON bruto</h3>
+  <pre>{
+  "state": {
+    "isStdOutTTY": true,
+    "isStdErrTTY": true,
+    "testRunDurationMs": 10203.02187
+  },
+  "metrics": {
+    "checks": {
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "rate": 0,
+        "passes": 0,
+        "fails": 4892
+      },
+      "thresholds": {
+        "rate>0.99": {
+          "ok": false
+        }
+      }
+    },
+    "data_received": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "rate": 232540.91094092693,
+        "count": 2372620
+      }
+    },
+    "http_req_duration": {
+      "values": {
+        "avg": 5.556464593826641,
+        "min": 0.667604,
+        "med": 1.507618,
+        "max": 87.113523,
+        "p(90)": 6.642102200000001,
+        "p(95)": 33.67475439999988
+      },
+      "thresholds": {
+        "p(95)&lt;800": {
+          "ok": true
+        }
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "http_req_connecting": {
+      "values": {
+        "p(90)": 0,
+        "p(95)": 0,
+        "avg": 0.15211417048242026,
+        "min": 0,
+        "med": 0,
+        "max": 84.954036
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "data_sent": {
+      "contains": "data",
+      "values": {
+        "count": 865884,
+        "rate": 84865.44584854448
+      },
+      "type": "counter"
+    },
+    "http_req_blocked": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 0.7874442330335231,
+        "min": 0.000821,
+        "med": 0.0030855,
+        "max": 88.660638,
+        "p(90)": 0.006089700000000002,
+        "p(95)": 0.008230649999999997
+      }
+    },
+    "http_req_failed": {
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "rate": 1,
+        "passes": 4892,
+        "fails": 0
+      }
+    },
+    "http_reqs": {
+      "values": {
+        "count": 4892,
+        "rate": 479.4657957544885
+      },
+      "type": "counter",
+      "contains": "default"
+    },
+    "iteration_duration": {
+      "values": {
+        "p(90)": 207.6651995,
+        "p(95)": 245.91868889999984,
+        "avg": 206.97466711815224,
+        "min": 200.785784,
+        "med": 202.16765800000002,
+        "max": 344.735081
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "http_req_tls_handshaking": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 0,
+        "min": 0,
+        "med": 0,
+        "max": 0,
+        "p(90)": 0,
+        "p(95)": 0
+      }
+    },
+    "vus": {
+      "type": "gauge",
+      "contains": "default",
+      "values": {
+        "value": 100,
+        "min": 100,
+        "max": 100
+      }
+    },
+    "http_req_receiving": {
+      "contains": "time",
+      "values": {
+        "p(95)": 0.12727955,
+        "avg": 0.06852828086672122,
+        "min": 0.014119,
+        "med": 0.056455,
+        "max": 4.090693,
+        "p(90)": 0.10356010000000002
+      },
+      "type": "trend"
+    },
+    "http_req_waiting": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 5.463740396770246,
+        "min": 0.619236,
+        "med": 1.4263854999999999,
+        "max": 86.579753,
+        "p(90)": 6.535891900000029,
+        "p(95)": 33.00871499999991
+      }
+    },
+    "vus_max": {
+      "type": "gauge",
+      "contains": "default",
+      "values": {
+        "max": 100,
+        "value": 100,
+        "min": 100
+      }
+    },
+    "http_req_sending": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(90)": 0.033512900000000005,
+        "p(95)": 0.04661684999999997,
+        "avg": 0.024195916189697478,
+        "min": 0.004269,
+        "med": 0.013159,
+        "max": 1.242463
+      }
+    },
+    "iterations": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 4892,
+        "rate": 479.4657957544885
+      }
+    }
+  },
+  "root_group": {
+    "name": "",
+    "path": "",
+    "id": "d41d8cd98f00b204e9800998ecf8427e",
+    "groups": [],
+    "checks": [
+        {
+          "name": "status 200",
+          "path": "::status 200",
+          "id": "fad9fa412b86fcb03bee97c80dcd61f1",
+          "passes": 0,
+          "fails": 4892
+        }
+      ]
+  },
+  "options": {
+    "noColor": false,
+    "summaryTrendStats": [
+      "avg",
+      "min",
+      "med",
+      "max",
+      "p(90)",
+      "p(95)"
+    ],
+    "summaryTimeUnit": ""
+  }
+}</pre>
+</div>
+</html>

@@ -1,0 +1,18 @@
+FROM grafana/k6:0.49.0
+
+# eleva para root só para instalar dependências
+USER root
+
+# Instala bash/curl/pip e AWS CLI
+RUN apk add --no-cache bash curl py3-pip \
+ && pip install --no-cache-dir awscli \
+ && aws --version
+
+# Garante diretórios e permissões para o usuário não-root do k6
+# (cria home caso não exista e ajusta donos)
+RUN adduser -D -h /home/k6 k6 2>/dev/null || true \
+ && mkdir -p /home/k6/.aws /reports /scripts \
+ && chown -R k6:k6 /home/k6 /reports /scripts
+
+# volta para o usuário do k6 (não-root) para executar o teste
+USER k6
