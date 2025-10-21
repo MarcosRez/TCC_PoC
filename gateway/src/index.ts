@@ -15,8 +15,16 @@ const gB = new GraphQLClient(SVC_B);
 
 // Schema do gateway (BFF): compõe dados de A e B
 const typeDefs = gql`
-  type Item { id: ID!, name: String!, value: Int! }
-  type ExternalCheck { ok: Boolean!, latency: Int!, service: String! }
+  type Item {
+    id: ID!
+    name: String!
+    value: Int!
+  }
+  type ExternalCheck {
+    ok: Boolean!
+    latency: Int!
+    service: String!
+  }
 
   type Query {
     health: String!
@@ -26,7 +34,10 @@ const typeDefs = gql`
     externalAll: [ExternalCheck!]!
   }
 
-  input NewItem { name: String!, value: Int! }
+  input NewItem {
+    name: String!
+    value: Int!
+  }
   type Mutation {
     createItemA(input: NewItem!): Boolean!
     createItemB(input: NewItem!): Boolean!
@@ -39,30 +50,31 @@ client.collectDefaultMetrics({ register });
 const reqs = new client.Counter({
   name: "gateway_graphql_requests_total",
   help: "Total de operações GraphQL no gateway",
-  labelNames: ["op", "field"]
+  labelNames: ["op", "field"],
 });
 register.registerMetric(reqs);
 
 const server = new ApolloServer({
   typeDefs,
+  introspection: true,
   resolvers: {
     Query: {
       health: async () => "ok",
       itemsA: async (_r, _a, _c, info) => {
         reqs.inc({ op: "query", field: info.fieldName });
-        const data:any = await gA.request(`{ items { id name value } }`);
+        const data: any = await gA.request(`{ items { id name value } }`);
         return data.items;
       },
       itemsB: async (_r, _a, _c, info) => {
         reqs.inc({ op: "query", field: info.fieldName });
-        const data:any = await gB.request(`{ items { id name value } }`);
+        const data: any = await gB.request(`{ items { id name value } }`);
         return data.items;
       },
       itemsAll: async (_r, _a, _c, info) => {
         reqs.inc({ op: "query", field: info.fieldName });
         const [a, b] = await Promise.all([
           gA.request(`{ items { id name value } }`),
-          gB.request(`{ items { id name value } }`)
+          gB.request(`{ items { id name value } }`),
         ]);
         //@ts-ignore
         return [...a.items, ...b.items];
@@ -71,23 +83,27 @@ const server = new ApolloServer({
         reqs.inc({ op: "query", field: info.fieldName });
         const q = `query { external { ok latency service } }`;
         const [a, b] = await Promise.all([gA.request(q), gB.request(q)]);
-         //@ts-ignore
+        //@ts-ignore
         return [a.external, b.external];
-      }
+      },
     },
     Mutation: {
       createItemA: async (_r, { input }, _c, info) => {
         reqs.inc({ op: "mutation", field: info.fieldName });
-        await gA.request(`mutation($i: NewItem!){ createItem(input:$i) }`, { i: input });
+        await gA.request(`mutation($i: NewItem!){ createItem(input:$i) }`, {
+          i: input,
+        });
         return true;
       },
       createItemB: async (_r, { input }, _c, info) => {
         reqs.inc({ op: "mutation", field: info.fieldName });
-        await gB.request(`mutation($i: NewItem!){ createItem(input:$i) }`, { i: input });
+        await gB.request(`mutation($i: NewItem!){ createItem(input:$i) }`, {
+          i: input,
+        });
         return true;
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 async function main() {
