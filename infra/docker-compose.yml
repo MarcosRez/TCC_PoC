@@ -1,5 +1,3 @@
-gname: tcc-infra
-
 networks:
   app:
     name: tcc-app
