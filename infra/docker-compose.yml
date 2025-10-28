@@ -158,21 +158,23 @@ services:
       dockerfile: Dockerfile.k6
     container_name: tcc-k6
     working_dir: /scripts
+    user: "${UID}:${GID}"   
     entrypoint: ["/bin/sh", "/scripts/entrypoint.sh"]
     volumes:
       - ./k6/scripts:/scripts:ro # script do k6 + entrypoint
-      - ./k6/reports:/reports # relatórios também disponíveis localmente
+      - ./k6/reports:/reports:rw  # relatórios também disponíveis localmente
       - ~/.aws:/home/k6/.aws:ro # << credenciais para o usuário k6
     environment:
       # Parâmetros do teste
       BASE_URL: "http://gateway:4000"
-      VUS: "100"
-      DURATION: "10s"
+      VUS: "200"
+      DURATION: "15s"
 
       # S3 (defina o bucket; prefixo é opcional)
       S3_BUCKET: "tcc-marcosrez"
       S3_PREFIX: "k6-reports"
       AWS_DEFAULT_REGION: "us-east-1"
+
     # Exemplo de execução: sobrescreva 'command' na hora de rodar
     # command: ["run","--vus","100","--duration","2m","script.js"]
     networks: [app]

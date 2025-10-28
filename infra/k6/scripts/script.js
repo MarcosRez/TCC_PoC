@@ -12,7 +12,7 @@ export const options = {
 };
 
 const URL = `${__ENV.BASE_URL || "http://gateway:4000"}/graphql`;
-const q = JSON.stringify({ query: "{ items { id name value } }" });
+const q = JSON.stringify({ query: "{ itemsAll { id name value } }" });
 
 export default function () {
   const res = http.post(URL, q, {
@@ -28,7 +28,7 @@ function toHtml(data) {
 
   // utilitários seguros
   const get = (obj, path, def = undefined) =>
-    path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj) ?? def;
+    path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj) || def;
 
   const esc = (s) =>
     String(s)
@@ -106,7 +106,7 @@ code,pre{background:#f6f8fa;border-radius:6px;padding:8px;display:block;white-sp
 <div class="card">
   <div class="badge">Requisições: ${esc(numReqs)}</div>
   <div class="badge">Taxa: ${fmt(reqRate,1)}/s</div>
-  <div class="badge">VUs: ${esc(vus ?? "N/D")} ${vusMax ? "/ máx " + esc(vusMax) : ""}</div>
+  <div class="badge">VUs: ${esc(vus || "N/D")} ${vusMax ? "/ máx " + esc(vusMax) : ""}</div>
   <div class="badge">avg: ${fmt(avg)} ms</div>
   <div class="badge">med: ${fmt(med)} ms</div>
   <div class="badge">p95: ${fmt(p95)} ms</div>
