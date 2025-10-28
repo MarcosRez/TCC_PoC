@@ -88,7 +88,7 @@ export const options = {
  *  Utils
  *  ========================= */
 function headers() {
-  return { "Content-Type": "application/json", ...EXTRA_HEADERS };
+  return Object.assign(base, EXTRA_HEADERS || {});
 }
 function gqlPayload(query, variables) {
   return JSON.stringify(variables ? { query, variables } : { query });
