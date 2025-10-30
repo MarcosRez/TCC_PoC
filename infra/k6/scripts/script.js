@@ -88,6 +88,7 @@ export const options = {
  *  Utils
  *  ========================= */
 function headers() {
+  const base = { "Content-Type": "application/json" };
   return Object.assign(base, EXTRA_HEADERS || {});
 }
 function gqlPayload(query, variables) {
@@ -120,8 +121,8 @@ export function setup() {
           const id = j && j.data && j.data.createItem && j.data.createItem.id;
           if (id) ids.push(id);
           return !!id;
-        } catch { return false; }
-      },
+        } catch(err) { return false; }
+      }
     });
     if (!ok) {
       // registra no stdout, mas continua sem falhar o setup todo
@@ -146,7 +147,7 @@ export function write(data) {
     "create id":  (r) => {
       try {
         return !!res.json().data.createItem.id;
-      } catch { return false; }
+      } catch(err) { return false; }
     },
   });
 
@@ -195,7 +196,7 @@ export function read(data) {
       "list has array": (r) => {
         try {
           return Array.isArray(r.json().data.itemsAll);
-        } catch { return false; }
+        } catch(err) { return false; }
       },
     });
   }
@@ -211,7 +212,7 @@ export function read(data) {
 function toHtml(data) {
   const m = (data && data.metrics) || {};
   const get = (obj, path, def = undefined) =>
-    path.split(".").reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj) ?? def;
+    path.split(".").reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj) || def;
   const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const fmt = (v, digits = 1) => (typeof v === "number" && isFinite(v) ? v.toFixed(digits) : "N/D");
 

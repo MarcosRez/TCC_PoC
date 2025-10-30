@@ -174,7 +174,7 @@ services:
       S3_BUCKET: "tcc-marcosrez"
       S3_PREFIX: "k6-reports"
       AWS_DEFAULT_REGION: "us-east-1"
-
+   
     # Exemplo de execução: sobrescreva 'command' na hora de rodar
     # command: ["run","--vus","100","--duration","2m","script.js"]
     networks: [app]
