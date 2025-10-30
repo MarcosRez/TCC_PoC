@@ -382,7 +382,7 @@ export function handleSummary(data) {
 
   // Também salva localmente (útil para debug/artefatos do CI)
   return {
-    "summary.html": html,
-    "summary.json": json,
+    "/reports/summary.html": html,
+    "/reports/summary.json": json,
   };
 }
